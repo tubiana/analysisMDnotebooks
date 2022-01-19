@@ -137,7 +137,7 @@ def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica
     plot_matrix(average_matrix, basename="average_std_distances", highlights=highlights,convert_idx_res=convert_idx_res)
 
     maxval = np.nanmax(matrices)
-    for i in tqdm(range(len(matrices[::10]))):
+    for i in tqdm(range(len(matrices[::4]))):
         plot_matrix(matrices[i], frameNumber=i, maxFrame=SIMULATIONTIME, highlights=highlights, maxval=maxval,convert_idx_res=convert_idx_res)
 
 
