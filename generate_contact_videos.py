@@ -147,6 +147,10 @@ def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica
 if __name__ == "__main__":
     SIMULATIONTIME = 200
     baseFolder="D:/work/ApoE/simulation/apoe"
+    if len(sys.argv) > 1:
+        baseFolder = sys.arg[1]
+        print(f"basefolder is {baseFolder}") # TODO <- to be improved with argparse.
+
 
     apoe=[1,2,3,4]
     replicas = [1,2,3]
