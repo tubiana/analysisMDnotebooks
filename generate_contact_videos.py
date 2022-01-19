@@ -141,9 +141,6 @@ def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica
         plot_matrix(matrices[i], frameNumber=i, maxFrame=SIMULATIONTIME, highlights=highlights, maxval=maxval,convert_idx_res=convert_idx_res)
 
 
-
-
-
 if __name__ == "__main__":
     SIMULATIONTIME = 200
     baseFolder="D:/work/ApoE/simulation/apoe"
@@ -151,9 +148,13 @@ if __name__ == "__main__":
         baseFolder = sys.argv[1]
         print(f"basefolder is {baseFolder}") # TODO <- to be improved with argparse.
 
-
-    apoe=[1,2,3,4]
-    replicas = [1,2,3]
+    if len(sys.argv) == 4:
+        apoe=[sys.argv[2]]
+        replicas=[sys.argv[3]]
+    else:
+        print("loop mode on all apoo and systems")
+        apoe=[1,2,3,4]
+        replicas = [1,2,3]
 
     for system in apoe:
         for replica in replicas:
