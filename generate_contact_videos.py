@@ -56,7 +56,7 @@ def get_matrices(distances, indexes, CAs):
 
     matrices [matrices == 0] = np.nan
 
-    return (average_matrix,matrices)
+    return (summatry_matrix,matrices)
 
 
 def plot_matrix(matrix, frameNumber=None, basename="distance_", maxFrame=None, maxval=10, highlights=[], convert_idx_res={}):
@@ -68,10 +68,21 @@ def plot_matrix(matrix, frameNumber=None, basename="distance_", maxFrame=None, m
         ax0 = fig.add_subplot(gs[0, :])
         ax1 = fig.add_subplot(gs[1, :])
         matrix = matrix + np.nan_to_num(matrix,0).T
-    else:
-        fig, ax0 = plt.subplots(figsize=(10,8))
+        g = sns.heatmap(matrix, cmap="viridis", ax=ax0, vmin=0, vmax=maxval,cbar_kws = {"shrink":0.5})
 
-    g = sns.heatmap(matrix, cmap="viridis", ax=ax0, vmin=0, vmax=maxval,cbar_kws = {"shrink":0.5})
+    else:
+        fig, ax0 = plt.subplots(figsize=(13,9))
+        average = matrix.copy()
+        average *= np.tri(*matrix.shape) # Set the upper triangle to 0
+        average [average == 0] = np.nan
+
+        std = matrix.copy()
+        std *= 1 - np.tri(*std.shape, k=-1) # Set the lower triangle to 0
+        std [std == 0] = np.nan
+
+        g = sns.heatmap(average, cmap="viridis", ax=ax0, vmin=0, vmax=maxval,cbar_kws = {"shrink":0.5,'location':"left",'pad':0.07,  'label': r'Average distance ($\AA$)'})
+        g = sns.heatmap(std, cmap="rocket_r", ax=ax0, vmin=0,cbar_kws = {"shrink":0.5, 'location':"right",'label': r'Standard deviation ($\AA$)'}, )
+
     old_xticklabels = g.get_xticklabels()
     old_yticklabels = g.get_yticklabels()
     new_xticklabels = [str(convert_idx_res[int(t.get_text())]) for t in old_xticklabels]
@@ -138,9 +149,9 @@ def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica
 
     maxval = np.nanmax(matrices)
     stride = 4
-    maxFrame = matrices.shape[0]/stride
-    for i in tqdm(range(len(matrices[::stride]))):
-        plot_matrix(matrices[i], frameNumber=i, maxFrame=maxFrame, highlights=highlights, maxval=maxval,convert_idx_res=convert_idx_res)
+    # maxFrame = matrices.shape[0]/stride
+    # for i in tqdm(range(len(matrices[::stride]))):
+    #     plot_matrix(matrices[i], frameNumber=i, maxFrame=maxFrame, highlights=highlights, maxval=maxval,convert_idx_res=convert_idx_res)
 
 
 if __name__ == "__main__":
