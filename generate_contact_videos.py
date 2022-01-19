@@ -153,5 +153,6 @@ if __name__ == "__main__":
 
     for system in apoe:
         for replica in replicas:
+            print(f"System = APOE{system} - Replica {replica}")
             prepare_and_run_calculations(SIMULATIONTIME, baseFolder, system,replica)
 
