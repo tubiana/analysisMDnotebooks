@@ -1,6 +1,8 @@
 import seaborn as sns
 import pandas as pd
 import mdtraj as md
+import argparse
+
 import os
 from numba import jit, njit, prange
 import numpy as np
@@ -9,6 +11,31 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from matplotlib import gridspec
 
+
+def parseArg():
+    """
+    This fonction will the list of pdb files and the distance
+    @return: dictionnary of arguments
+    Ex :
+    python Cluster_Analysis.py -f *.pdb -s A:1-30:CA
+    """
+    arguments = argparse.ArgumentParser(description="This program was developped in order to clusterize "
+                                                    "molecular dynamictrajectories (Amber, gromacs, chamm, namd, PDB)")
+    try:
+        argcomplete.autocomplete(arguments)
+    except:
+        pass
+    arguments.add_argument('-f', "--traj", help="trajectory file. only NAME", required=True,
+                           nargs='+')
+    arguments.add_argument('-t', '--top', help="topfile", default=None)
+    arguments.add_argument('-r', '--region', help="Highlight some regions", default=[])
+    arguments.add_argument('-r', '--region', help="Highlight some regions", default=[])
+    arguments.add_argument('-b', '--basefolder', help="Highlight some regions", default="D:/work/ApoE/simulation/apoe")
+    arguments.add_argument('-c', '--comareReplicas', help="Compare replicas ?", default="n")
+    
+
+
+    return (args)
 
 def read_traj(trajectory, topol):
     return md.traj(trajectory, top=topol)
@@ -123,7 +150,7 @@ def plot_matrix(matrix, frameNumber=None, basename="distance_", maxFrame=None, m
     plt.close()
 
 
-def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica):
+def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica, saveAverageMatrix=True):
     workdir = f"{baseFolder}/apoe{apoeNumber}/results/replica_{replica}/prod"
     os.chdir(workdir)
     trajectory = f"md_APOE{apoeNumber}_clean_nowat.xtc"
@@ -146,6 +173,9 @@ def prepare_and_run_calculations(SIMULATIONTIME, basefolder, apoeNumber, replica
 
     #plot the averate + std matrix
     plot_matrix(average_matrix, basename="average_std_distances", highlights=highlights,convert_idx_res=convert_idx_res)
+
+    if saveAverageMatrix:
+        np.save(file=f"{workdir}/analysis/PNG/distances/averageDist_apoe{apoeNumber}_r{replica}.npy",arr=average_matrix)
 
     maxval = np.nanmax(matrices)
     stride = 4
